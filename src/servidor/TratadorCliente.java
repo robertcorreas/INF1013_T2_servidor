@@ -1,10 +1,11 @@
 package servidor;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Scanner;
+import java.util.List;
 
 public class TratadorCliente implements Runnable {
 
@@ -21,26 +22,51 @@ public class TratadorCliente implements Runnable {
 
 		System.out.println("Nova conexão com o cliente " + cliente.getInetAddress().getHostAddress());
 
-		Scanner in;
 		try {
-			in = new Scanner(cliente.getInputStream());
-			while (in.hasNextLine()) {
-				distribuiMensagem(in.nextLine());
+			InputStream in = cliente.getInputStream();
+			
+			List<Byte> bytes = new ArrayList<Byte>();
+			int count = 0;
+			while (true) {
+				int b = in.read();
+				
+				if((byte)b == Byte.MAX_VALUE) {
+					count++;
+				} else count = 0;
+				if(count > 5) continue;
+				bytes.add((byte)b);
+				if (count == 5) {
+					Byte[] bytesarr = new Byte[bytes.size()];
+					byte[] bytesarr2 = new byte[bytes.size()];
+					bytes.toArray(bytesarr);
+					bytes.clear();
+					for(int i = 0; i < bytesarr.length; i++) {
+						bytesarr2[i] = bytesarr[i];
+					}
+					distribuiMensagem(bytesarr2);
+				}
 			}
-			in.close();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	void distribuiMensagem(String mensagem) throws IOException {
+	void distribuiMensagem(byte[] bytesarr) {
+		System.out.println("distribuindo mensagem");
 		for (Socket cli : lista) {
 			
 			if(cli == this.cliente) continue;
 			
-			PrintStream print = new PrintStream(cli.getOutputStream());
+			PrintStream print;
+			try {
+				print = new PrintStream(cli.getOutputStream());
+				print.write(bytesarr);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
-			print.println(mensagem);
 		} 
 	}
 }
