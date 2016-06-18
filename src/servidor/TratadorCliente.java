@@ -45,6 +45,7 @@ public class TratadorCliente implements Runnable {
 						bytesarr2[i] = bytesarr[i];
 					}
 					distribuiMensagem(bytesarr2);
+					break;
 				}
 			}
 		} catch (IOException e) {
