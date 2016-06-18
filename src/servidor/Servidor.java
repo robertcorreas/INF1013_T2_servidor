@@ -12,15 +12,16 @@ public class Servidor {
 
 	public static void main(String[] args) throws IOException {
 
-		servidor = new ServerSocket(5001);
-		System.out.println("Porta 5001 aberta");
+		servidor = new ServerSocket(5500);
+		System.out.println("Porta 5500 aberta");
 		socketsCliente = new ArrayList<Socket>();
 
 		Socket cliente;
 
 		while (true) {
 			cliente = servidor.accept();
-			socketsCliente.add(cliente);
+			if(!socketsCliente.contains(cliente))
+				socketsCliente.add(cliente);
 
 			TratadorCliente tratador = new TratadorCliente(cliente,socketsCliente);
 
