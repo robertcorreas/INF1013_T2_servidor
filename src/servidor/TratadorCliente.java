@@ -9,7 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TratadorCliente implements Runnable {
-
+	private static int CODE_SIZE = 20;
+	
 	private Socket cliente;
 	private ArrayList<Socket> lista;
 
@@ -33,10 +34,12 @@ public class TratadorCliente implements Runnable {
 					count++;
 				} else
 					count = 0;
-				if (count > 5)
-					continue;
-				bytes.add((byte) b);
-				if (count == 5) {
+				
+				if (count > CODE_SIZE || b < 0) continue;
+				else bytes.add((byte) b);
+				System.out.println(b);
+				
+				if (count == CODE_SIZE) {
 					Byte[] bytesarr = new Byte[bytes.size()];
 					byte[] bytesarr2 = new byte[bytes.size()];
 					bytes.toArray(bytesarr);
@@ -45,7 +48,6 @@ public class TratadorCliente implements Runnable {
 						bytesarr2[i] = bytesarr[i];
 					}
 					distribuiMensagem(bytesarr2);
-					break;
 				}
 			}
 		} catch (IOException e) {
@@ -54,6 +56,7 @@ public class TratadorCliente implements Runnable {
 	}
 
 	void distribuiMensagem(byte[] bytesarr) throws IOException {
+		System.out.println("Distribuindo mensagens");
 		for (Socket cli : lista) {
 
 			 if (cli == this.cliente)
