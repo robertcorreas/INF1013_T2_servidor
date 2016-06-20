@@ -3,7 +3,6 @@ package servidor;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,17 +36,16 @@ public class TratadorCliente implements Runnable {
 				
 				if (count > CODE_SIZE || b < 0) continue;
 				else bytes.add((byte) b);
-				System.out.println(b);
 				
 				if (count == CODE_SIZE) {
-					Byte[] bytesarr = new Byte[bytes.size()];
-					byte[] bytesarr2 = new byte[bytes.size()];
-					bytes.toArray(bytesarr);
+					Byte[] messageBytes = new Byte[bytes.size()];
+					byte[] fullmessageBytes = new byte[bytes.size()];
+					bytes.toArray(messageBytes);
 					bytes.clear();
-					for (int i = 0; i < bytesarr.length; i++) {
-						bytesarr2[i] = bytesarr[i];
+					for (int i = 0; i < messageBytes.length; i++) {
+						fullmessageBytes[i] = messageBytes[i];
 					}
-					distribuiMensagem(bytesarr2);
+					distribuiMensagem(fullmessageBytes);
 				}
 			}
 		} catch (IOException e) {
